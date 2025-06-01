@@ -1,0 +1,46 @@
+@startuml C4_ContextStandard
+
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(client, "Клиент")
+
+Boundary(internetBankBound, "Интернет банк") {
+    Container(frontIB, "Веб-клиент ИБ", "ASP.NET MVC 4.5")
+    Container(backIB, "Веб-сервер ИБ", ".NET Framework 4.5")
+    ContainerDb(DbIB, "Database ИБ", "MS SQL")
+}
+
+Boundary(depositeServiceBound, "Сервис депозитов") {
+    Container(depositeService, "Бизнес логика сервиса депозитов", "Java Spring Boot")
+    ContainerDb(depositeServiceDb, "Database сервиса депозитов", "PostgreSQL")
+}
+
+Boundary(absBound, "АБС") {
+    Container(serviceRates, "Сервис ставок", "Java Spring Boot")
+    ContainerDb(serviceRatesDb, "Databse сервиса ставок", "PostgreSQL")
+    Container(proxyAbs, "Прокси-сервис для передачи/сохранения данных с/на АБС", "Java Spring Boot")
+    Container(abs, "UI АБС", "Delphi")
+    ContainerDb(absDb, "Бизнес логика АБС", "Oracle, PL/SQL")
+}
+
+System(smsGateway, "СМС-шлюз", "", "", "", "", "Software System")
+System_Ext(smsOperator, "Телеком-оператор")
+
+Rel(client, frontIB, "Подача заявки на открытие депозита")
+Rel(frontIB, backIB, "Обработка введенных данных/загрузка данных", "REST/HTTPS")
+Rel(backIB, DbIB, "", "ODBC")
+
+Rel(backIB, depositeService, "Сохранение заявки на открытие депозита/загрузка данных по доступным депозитам", "REST/HTTPS")
+Rel(depositeService, depositeServiceDb, "Сохранение данных", "ODBC")
+Rel(depositeService, proxyAbs, "Передача данных", "REST/HTTPS")
+Rel(depositeService, serviceRates, "Получение ставки", "REST/HTTPS")
+
+Rel(serviceRates, serviceRatesDb, "Загрузка/чтение данных", "ODBC")
+Rel(proxyAbs, serviceRates, "Обновление ставок", "REST/HTTPS")
+Rel(abs, absDb, "Обработка заявок/загрузка данных на UI АБС", "Oracle client")
+Rel(proxyAbs, absDb, "Чтение/сохранение данных", "Oracle client")
+Rel(abs, smsGateway, "Отправка одобрения заявки клиенту")
+Rel(smsGateway, smsOperator, "Отправка сообщения с одобрением заявки на депозит")
+Rel(smsOperator, client, "Отправка сообщения клиенту с подтверждением заявки на открытие депозита")
+
+@enduml
