@@ -1,0 +1,20 @@
+@startuml C4_ContextStandard
+
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(client, "Клиент")
+
+System(internetBank, "Интернет-банк", "", "", "", "", "Software System")
+System(depositeService, "Сервис депозитов", "", "", "", "", "Software System")
+System(abs, "АБС", "", "", "", "", "Software System")
+System(smsGateway, "СМС-шлюз", "", "", "", "", "Software System")
+System_Ext(smsOperator, "Телеком-оператор", "", "", "", "", "Software System")
+
+Rel(client, internetBank, "Подача заявки на открытие депозита")
+Rel(internetBank, depositeService, "Сохранение заявки для дальнейшего рассмотрения")
+Rel(depositeService, abs, "Обработка заявки сотрудником банка")
+Rel(abs, smsGateway, "Отправить одобрение заявки клиенту")
+Rel(smsGateway, smsOperator, "Отправка сообщения с одобрением заявки на депозит")
+Rel(smsOperator, client, "Отправка сообщения клиенту с подтверждением заявки на открытие депозита")
+
+@enduml
