@@ -1,0 +1,28 @@
+@startuml C4_ContextStandard
+
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(callCenterWorker, "Сотрудник кол-центра")
+Person_Ext(extCallCenterWorker, "Сотрудник внешнего кол-центра")
+
+Boundary(callCenterBound, "Кол-центр") {
+    Container(frontCallCenter, "Веб-клиент кол-центра", "React.js")
+    Container(backCallCenter, "Веб-сервер кол-центра", "Java Spring Boot")
+    ContainerDb(DbCallCenter, "Database кол-центра", "PostgreSQL")
+}
+
+Boundary(absBound, "АБС") {
+    Container(serviceRates, "Сервис ставок", "Java Spring Boot")
+}
+
+Container_Ext(sftp, "SFTP-ресурс")
+
+Rel(callCenterWorker, frontCallCenter, "Получение текущей ставки")
+Rel(frontCallCenter, backCallCenter, "Запрос текущей ставки для клиента", "REST/HTTPS")
+Rel(backCallCenter, DbCallCenter, "Сохранение / загрузка данных", "ODBC")
+
+Rel(backCallCenter, serviceRates, "Загрузка текущей ставки", "REST/HTTPS")
+Rel(serviceRates, sftp, "Обновление текущей ставки", "SFTP")
+Rel(extCallCenterWorker, sftp, "Чтение текущей ставки", "SFTP")
+
+@enduml

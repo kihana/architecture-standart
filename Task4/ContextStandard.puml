@@ -1,0 +1,17 @@
+@startuml C4_ContextStandard
+
+!include  https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Context.puml
+
+Person(callCenterWorker, "Сотрудник кол-центра")
+Person_Ext(extCallCenterWorker, "Сотрудник внешнего кол-центра")
+
+System(callCenter, "Кол-центр", "", "", "", "", "Software System")
+System(absRatesService, "АБС (сервис ставок)", "", "", "", "", "Software System")
+System_Ext(extSftp, "Внешний SFTP-ресурс", "", "", "", "", "Software System")
+
+Rel(callCenterWorker, callCenter, "Получение текущей ставки")
+Rel(callCenter, absRatesService, "Запрос текущей ставки для клиента")
+Rel(absRatesService, extSftp, "Обновление текущей ставки")
+Rel(extCallCenterWorker, extSftp, "Получение текущей ставки")
+
+@enduml
